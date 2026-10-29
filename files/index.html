@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Mój Własny Live Stream</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.16/hls.min.js" integrity="sha512-zAODd1LM+/58SazX5fct5psehCijY60y5rG0BYIzxTXot7ovEo2FhfWTV0mp4oqIef2xriyg4zlrPlmFTDcPXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body { background: #111; color: white; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        video { border: 4px solid #333; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <h1>Transmisja na żywo (Serwer C + Epoll)</h1>
+    <video id="video" controls autoplay muted width="854" height="480"></video>
+
+    <script>
+        const video = document.getElementById('video');
+        // Dynamicznie dopasowuje adres do portu, na którym uruchomisz serwer w C
+        const videoSrc = window.location.origin + '/stream.m3u8'; 
+
+        if (Hls.isSupported()) {
+            const hls = new Hls({
+                maxLiveSyncPlaybackRate: 1.5 // Pomaga dogonić stream, jeśli pojawi się opóźnienie
+            });
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Dla Safari (które wspiera HLS natywnie bez bibliotek)
+            video.src = videoSrc;
+        }
+    </script>
+</body>
+</html>
